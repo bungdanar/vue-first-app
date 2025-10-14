@@ -40,7 +40,18 @@ export default defineComponent({
       <h1>My Friends</h1>
     </header>
     <ul>
-      <FriendContact v-for="friend in friends" :key="friend.id" :friend="friend" />
+      <FriendContact
+        name="Manuel"
+        phone-number="123456"
+        email-address="manuel@gmail.com"
+        is-favorite="1"
+      />
+      <FriendContact
+        name="Lorenze"
+        phone-number="123456"
+        email-address="lorenze@gmail.com"
+        is-favorite="0"
+      />
     </ul>
   </section>
 </template>
