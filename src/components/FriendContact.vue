@@ -2,12 +2,33 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  props: ['name', 'phone-number', 'emailAddress', 'isFavorite'],
+  props:{
+    id: {
+      type: String,
+      required: true
+    },
+    name: {
+      type: String,
+      required: true
+    },
+    phoneNumber: {
+      type: String,
+      required: true
+    },
+    emailAddress: {
+      type: String,
+      required: true
+    },
+    isFavorite:{
+      type: Boolean,
+      required: false,
+      default: false,
+    }
+  },
+  emits: ['toggle-favorite', 'delete-friend'],
   data() {
     return {
       detailsAreVisible: false,
-      // Assign prop to local state
-      friendIsFavorite: this.isFavorite,
     }
   },
   methods: {
@@ -15,12 +36,8 @@ export default defineComponent({
       this.detailsAreVisible = !this.detailsAreVisible
     },
     toggleFavorite() {
-      // Modify state instead of prop
-      if (this.friendIsFavorite === '1') {
-        this.friendIsFavorite = '0'
-      } else {
-        this.friendIsFavorite = '1'
-      }
+      // Now, the event name is strong typed
+      this.$emit('toggle-favorite', this.id)
     },
   },
 })
@@ -28,13 +45,14 @@ export default defineComponent({
 
 <template>
   <li>
-    <h2>{{ name }} {{ friendIsFavorite === '1' ? '(Favorite)' : '' }}</h2>
+    <h2>{{ name }} {{ isFavorite  ? '(Favorite)' : '' }}</h2>
     <button @click="toggleFavorite">Toggle Favorite</button>
     <button @click="toggleDetails">{{ !detailsAreVisible ? 'Show' : 'Hide' }} Details</button>
     <ul v-if="detailsAreVisible">
-      <li><strong>Phone:</strong> {{ ['phone-number'] }}</li>
+      <li><strong>Phone:</strong> {{ phoneNumber }}</li>
       <li><strong>Email:</strong> {{ emailAddress }}</li>
     </ul>
+    <button @click="$emit('delete-friend', id)">Delete</button>
   </li>
 </template>
 

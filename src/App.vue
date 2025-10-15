@@ -1,17 +1,19 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import FriendContact from './components/FriendContact.vue'
+import NewFriend from './components/NewFriend.vue'
 
 export type Friend = {
   id: string
   name: string
   email: string
   phone: string
+  isFavorite: boolean
 }
 
 export default defineComponent({
   components: {
-    FriendContact,
+    FriendContact, NewFriend
   },
   data() {
     return {
@@ -21,16 +23,42 @@ export default defineComponent({
           name: 'Manuel Lorenz',
           email: 'manuel@gmail.com',
           phone: '12345678',
+          isFavorite: true
         },
         {
           id: 'lorene',
           name: 'Lorene Lorenz',
           email: 'lorene@gmail.com',
           phone: '12345678',
+          isFavorite: false
         },
       ] as Friend[],
     }
   },
+  methods: {
+    toggleFavoriteStatus(friendId: string){
+      // Directly update data using object reference
+      // No need to assign new value
+      const friend = this.friends.find(f => f.id === friendId)
+      if(friend){
+        friend.isFavorite = !friend.isFavorite
+      }
+    },
+    addContact(name:string, phone:string, email:string){
+      const newFriend: Friend = {
+        id: new Date().toISOString(),
+        name,
+        phone,
+        email,
+        isFavorite:false
+      }
+
+      this.friends.push(newFriend)
+    },
+    deleteFriend(id: string){
+      this.friends = this.friends.filter(f => f.id !== id)
+    }
+  }
 })
 </script>
 
@@ -39,18 +67,18 @@ export default defineComponent({
     <header>
       <h1>My Friends</h1>
     </header>
+    <NewFriend @add-contact="addContact"/>
     <ul>
       <FriendContact
-        name="Manuel"
-        phone-number="123456"
-        email-address="manuel@gmail.com"
-        is-favorite="1"
-      />
-      <FriendContact
-        name="Lorenze"
-        phone-number="123456"
-        email-address="lorenze@gmail.com"
-        is-favorite="0"
+        v-for="friend in friends"
+        :key="friend.id"
+        :id="friend.id"
+        :name="friend.name"
+        :email-address="friend.email"
+        :phone-number="friend.phone"
+        :is-favorite="friend.isFavorite"
+        @toggle-favorite="toggleFavoriteStatus"
+        @delete-friend="deleteFriend"
       />
     </ul>
   </section>
@@ -89,7 +117,8 @@ header {
   list-style: none;
 }
 
-#app li {
+#app li,
+#app form {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   margin: 1rem auto;
   border-radius: 10px;
@@ -121,5 +150,19 @@ header {
   background-color: #ec3169;
   border-color: #ec3169;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.26);
+}
+
+#app input {
+  font: inherit;
+  padding: 0.15rem;
+}
+#app label {
+  font-weight: bold;
+  margin-right: 1rem;
+  width: 7rem;
+  display: inline-block;
+}
+#app form div {
+  margin: 1rem 0;
 }
 </style>
